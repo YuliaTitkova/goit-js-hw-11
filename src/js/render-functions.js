@@ -1,44 +1,59 @@
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
-const gallery = document.querySelector('.gallery');
+const galleryContainer = document.querySelector('.gallery');
 const loader = document.querySelector('.loader');
-let lightbox = null;
 
-export function renderGallery(images) {
-  const markup = images
-    .map(
-      image => `
-      <a href="${image.largeImageURL}" class="gallery-item">
-        <img src="${image.webformatURL}" alt="${image.tags}" />
-        <div class="info">
-          <p><b>Likes:</b> ${image.likes}</p>
-          <p><b>Views:</b> ${image.views}</p>
-          <p><b>Comments:</b> ${image.comments}</p>
-          <p><b>Downloads:</b> ${image.downloads}</p>
-        </div>
-      </a>
-    `
-    )
-    .join('');
+//  Створення екземпляра SimpleLightbox
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
-  gallery.insertAdjacentHTML('beforeend', markup);
+//  Єдина функція — створює + вставляє + оновлює лайтбокс
+export function createGallery(images) {
+  const markup = images.map(({
+    webformatURL,
+    largeImageURL,
+    tags,
+    likes,
+    views,
+    comments,
+    downloads,
+  }) => `<li class="gallery-item">
+            <a href="${largeImageURL}">
+              <img src="${webformatURL}" alt="${tags}" />
+            </a>
+            <div class="info">
+              <p><b>Likes:</b> ${likes}</p>
+              <p><b>Views:</b> ${views}</p>
+              <p><b>Comments:</b> ${comments}</p>
+              <p><b>Downloads:</b> ${downloads}</p>
+            </div>
+        </li>`
+  ).join('');
 
-  if (!lightbox) {
-    lightbox = new SimpleLightbox('.gallery a');
-  } else {
-    lightbox.refresh();
-  }
+  galleryContainer.innerHTML = markup;
+  lightbox.refresh();
 }
 
+// Очищення галереї
 export function clearGallery() {
-  gallery.innerHTML = '';
+  galleryContainer.innerHTML = '';
 }
 
+// Показати лоадер
 export function showLoader() {
-  loader.classList.remove('hidden');
+  loader.classList.add('is-active');
+  loader.classList.remove('is-hidden');
 }
 
+// Сховати лоадер
 export function hideLoader() {
-  loader.classList.add('hidden');
+  loader.classList.add('is-hidden');
+  loader.classList.remove('is-active');
 }
+
+
+
+
